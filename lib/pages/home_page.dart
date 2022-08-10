@@ -8,13 +8,15 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final TextEditingController _controller = TextEditingController();
+  final TextEditingController _angka1 = TextEditingController();
+  final TextEditingController _angka2 = TextEditingController();
 
-  String _displayedText = '';
+  double _result = 0;
 
   @override
   void dispose() {
-    _controller.dispose();
+    _angka1.dispose();
+    _angka2.dispose();
     super.dispose();
   }
 
@@ -22,30 +24,85 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Tampilkan Nama'),
+        title: const Text('Masukkan 2 Angka'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(12.0),
         child: Column(
           children: [
+            Text(
+              "Masukkan Dua Angka".toUpperCase(),
+              style: Theme.of(context).textTheme.headline5,
+            ),
             TextField(
-              controller: _controller,
+              controller: _angka1,
               decoration: const InputDecoration(
-                labelText: 'Masukkan Nama Anda',
-                floatingLabelBehavior: FloatingLabelBehavior.always,
+                labelText: 'Masukkan Angka Pertama',
               ),
             ),
-            ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  _displayedText = _controller.text;
-                });
-              },
-              child: const Text('Tampilkan'),
+            TextField(
+              controller: _angka2,
+              decoration: const InputDecoration(
+                labelText: 'Masukkan Angka Kedua',
+              ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      _result = double.parse(_angka1.text) +
+                          double.parse(_angka2.text);
+                    });
+                  },
+                  child: const Text('+'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      _result = double.parse(_angka1.text) -
+                          double.parse(_angka2.text);
+                    });
+                  },
+                  child: const Text('-'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      _result = double.parse(_angka1.text) *
+                          double.parse(_angka2.text);
+                    });
+                  },
+                  child: const Text('*'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      _result = double.parse(_angka1.text) /
+                          double.parse(_angka2.text);
+                    });
+                  },
+                  child: const Text('/'),
+                ),
+              ],
+            ),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    _result = 0;
+                    _angka1.clear();
+                    _angka2.clear();
+                  });
+                },
+                child: const Text("Bersihkan"),
+              ),
             ),
             Text(
-              _displayedText,
-              style: Theme.of(context).textTheme.headline1,
+              'Hasilnya adalah $_result',
+              style: Theme.of(context).textTheme.headline5,
             ),
           ],
         ),
