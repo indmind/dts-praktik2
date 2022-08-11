@@ -1,47 +1,45 @@
 import 'package:flutter/material.dart';
 
-class HomePage extends StatefulWidget {
+import 'internal_page.dart';
+import 'external_page.dart';
+
+class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
-
-  @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  final List<String> countries = [
-    'Indonesia',
-    'Malaysia',
-    'Singapore',
-    'Italia',
-    'Inggris',
-    'Belanda',
-    'Argentina',
-    'Chile',
-    'Mesir',
-    'Uganda',
-  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('ListView sederhana'),
+        title: const Text('DTSProject File'),
       ),
-      body: ListView.separated(
-        separatorBuilder: (context, index) => const Divider(height: 0),
-        itemBuilder: (context, index) {
-          return ListTile(
-            title: Text(countries[index]),
-            onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('Memilih ${countries[index]}'),
-                ),
-              );
-            },
-          );
-        },
-        itemCount: countries.length,
+      body: SizedBox(
+        width: double.infinity,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const InternalPage(),
+                  ),
+                );
+              },
+              child: const Text('Internal'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const ExternalPage(),
+                  ),
+                );
+              },
+              child: const Text('Eksternal'),
+            ),
+          ],
+        ),
       ),
     );
   }
