@@ -13,7 +13,7 @@ class _HomePageState extends State<HomePage> {
 
   final TextEditingController _nameController = TextEditingController();
 
-  List<Map<String, dynamic>> _students = [];
+  List<Map<String, dynamic>> _cities = [];
 
   @override
   void initState() {
@@ -40,7 +40,7 @@ class _HomePageState extends State<HomePage> {
             TextField(
               controller: _nameController,
               decoration: const InputDecoration(
-                labelText: 'Masukkan Nama',
+                labelText: 'Masukkan Kota',
               ),
             ),
             ElevatedButton(
@@ -56,18 +56,41 @@ class _HomePageState extends State<HomePage> {
                 child: ListView.builder(
               itemBuilder: (context, index) {
                 return ListTile(
-                  title: Text(_students[index][DbService.keyFirstname]),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.delete),
-                    onPressed: () async {
-                      await _dbService
-                          .delete(_students[index][DbService.keyId]);
-                      await _updateStudents();
-                    },
+                  title: Text(_cities[index][DbService.keyFirstname]),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.delete),
+                        onPressed: () async {
+                          await _dbService
+                              .delete(_cities[index][DbService.keyId]);
+                          await _updateStudents();
+                        },
+                      ),
+                      // edit using dialog
+                      IconButton(
+                        icon: const Icon(Icons.edit),
+                        onPressed: () async {
+                          final String? name = await showDialog<String>(
+                            context: context,
+                            builder: (context) =>
+                                EditCityDialog(city: _cities[index]),
+                          );
+                          if (name != null) {
+                            await _dbService.update(
+                              _cities[index][DbService.keyId],
+                              name,
+                            );
+                            await _updateStudents();
+                          }
+                        },
+                      ),
+                    ],
                   ),
                 );
               },
-              itemCount: _students.length,
+              itemCount: _cities.length,
             )),
           ],
         ),
@@ -78,7 +101,52 @@ class _HomePageState extends State<HomePage> {
   Future<void> _updateStudents() async {
     final List<Map<String, dynamic>> students = await _dbService.getAll();
     setState(() {
-      _students = students;
+      _cities = students;
     });
+  }
+}
+
+class EditCityDialog extends StatefulWidget {
+  const EditCityDialog({
+    Key? key,
+    required this.city,
+  }) : super(key: key);
+
+  final Map<String, dynamic> city;
+
+  @override
+  State<EditCityDialog> createState() => _EditCityDialogState();
+}
+
+class _EditCityDialogState extends State<EditCityDialog> {
+  late final _nameController =
+      TextEditingController(text: widget.city[DbService.keyFirstname]);
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Edit Kota'),
+      content: TextField(
+        controller: _nameController,
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('Batal'),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            Navigator.of(context).pop(_nameController.text);
+          },
+          child: const Text('Simpan'),
+        ),
+      ],
+    );
   }
 }
